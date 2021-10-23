@@ -36,8 +36,8 @@ public class IndexFile {
 
         new scoringResults(VSM, BM_25, index_directory, query_parser);
         // Comment one while using another Score:-
-        // scoringResults.scoringDocs(BM_25, querystrings);
-        scoringResults.scoringDocs(VSM, querystrings);
+        scoringResults.scoringDocs(BM_25, querystrings);
+        //scoringResults.scoringDocs(VSM, querystrings);
 
         shutdown();
     }
