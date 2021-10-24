@@ -20,11 +20,14 @@ public class scoringResults {
     public static Directory indexDirectory;
     public static QueryParser query_parser;
 
-    public scoringResults(int vsm, int bM_25, Directory inDirectory, QueryParser qp) {
+    public static int x;
+
+    public scoringResults(int vsm, int bM_25, Directory inDirectory, QueryParser qp, int x) {
         this.VSM = vsm;
         this.BM_25 = bM_25;
         this.indexDirectory = inDirectory;
         this.query_parser = qp;
+        this.x = x;
     }
 
     public static void scoringDocs(int type, ArrayList<String> querystrings) throws IOException, ParseException {
@@ -35,26 +38,57 @@ public class scoringResults {
         File resultsDir = null;
         if (type == VSM) {
             indexSearch.setSimilarity(new ClassicSimilarity());
-            resultsDir = new File("VSM_results.txt"); 
+            if (x == 0) {
+                resultsDir = new File("VSM_results_StandardEnglish.txt");
+            }
+            if (x == 1) {
+                resultsDir = new File("VSM_results_Whitespace.txt");
+            }
+            if (x == 2) {
+                resultsDir = new File("VSM_results_Simple.txt");
+            }
+            // if (x == 3) {
+            //     resultsDir = new File("VSM_results_Stop.txt");
+            // }
+            if (x == 3) {
+                resultsDir = new File("VSM_results_Classic.txt");
+            }
 
         } else if (type == BM_25) {
             indexSearch.setSimilarity(new BM25Similarity());
-            resultsDir = new File("BM25_results.txt");
+            if (x == 0) {
+                resultsDir = new File("BM25_results_StandardEnglish.txt");
+            }
+            if (x == 1) {
+                resultsDir = new File("BM25_results_Whitespace.txt");
+            }
+            if (x == 2) {
+                resultsDir = new File("BM25_results_Simple.txt");
+            }
+            // if (x == 3) {
+            //     resultsDir = new File("BM25_results_Stop.txt");
+            // }
+            if (x == 3) {
+                resultsDir = new File("BM25_results_Classic.txt");
+            }
+
         } else {
             System.out.println("Invalid scoring entry");
         }
         BufferedWriter bw = new BufferedWriter(new FileWriter(resultsDir));
         try {
+
             for (String querystring : querystrings) {
                 query = query_parser.parseQuery(querystring);
 
                 ScoreDoc[] hits = indexSearch.search(query, 1400).scoreDocs;
 
-                // write results to file for eval
-                writeResultsFile(hits, indexSearch, queryIndex, type, bw);
+                // write output results to file
+                outputFile(hits, indexSearch, queryIndex, type, bw);
 
                 queryIndex++;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -67,17 +101,17 @@ public class scoringResults {
 
     }
 
-    public static void writeResultsFile(ScoreDoc[] hits, IndexSearcher indexSearch, int queryIndex, int type,
+    public static void outputFile(ScoreDoc[] hits, IndexSearcher indexSearch, int queryIndex, int type,
             BufferedWriter bw) throws IOException {
 
         for (int i = 0; i < hits.length; i++) {
-            Document hitDoc = indexSearch.doc(hits[i].doc);
-            String line = (queryIndex) + " 0 " + hitDoc.get("file_number") + " " + (i + 1) + " " + hits[i].score
-                    + " STANDARD" + " \n";
-            bw.write(line);
-            // System.out.println(line);
-        }
 
+            Document hitsPerDoc = indexSearch.doc(hits[i].doc);
+            String output = (queryIndex) + " Q0 " + hitsPerDoc.get("file_number") + " " + (i + 1) + " " + hits[i].score
+                    + " STANDARD" + " \n";
+            bw.write(output);
+
+        }
         if (queryIndex == 225) {
             bw.close();
         }

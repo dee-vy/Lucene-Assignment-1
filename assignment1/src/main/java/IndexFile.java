@@ -3,7 +3,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.standard.ClassicAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.store.Directory;
@@ -22,26 +27,50 @@ public class IndexFile {
 
     private static Directory index_directory;
     private static Directory query_directory;
-    private static Analyzer query_analyzer;
+    private static Analyzer textAnalyzer;
     private static QueryParser query_parser;
+
+    public static int x;
+    public static CharArraySet stopWords;
 
     public static void main(String[] args) throws IOException, ParseException {
         ArrayList<String> querystrings = new ArrayList<String>();
-        query_analyzer = new StandardAnalyzer(EnglishAnalyzer.getDefaultStopSet());
 
-        index_directory = FSDirectory.open(Paths.get(indexDirectory));
-        query_directory = FSDirectory.open(Paths.get(queryDirectory));
-        // create index for Cranfield corpus
-        ProcessFile parse_doc = new ProcessFile(indexDirectory);
-        parse_doc.processFile(cranDirectory + "/cran.all.1400", indexDirectory, index_directory);
-        // create index for the Cranfield Queries
-        query_parser = new QueryParser(query_analyzer);
-        querystrings = query_parser.readFile(cranDirectory + "/cran.qry");
+        for (int i = 0; i < 4; i++) {
+            if (i == 0) {
+                textAnalyzer = new StandardAnalyzer(EnglishAnalyzer.getDefaultStopSet());
+                x = 0;
+            }
+            if (i == 1) {
+                textAnalyzer = new WhitespaceAnalyzer();
+                x = 1;
+            }
+            if (i == 2) {
+                textAnalyzer = new SimpleAnalyzer();
+                x = 2;
+            }
+            if (i == 3) {
+                textAnalyzer = new ClassicAnalyzer();
+                x = 3;
+            }
+            System.out.println(textAnalyzer);
+            index_directory = FSDirectory.open(Paths.get(indexDirectory));
+            query_directory = FSDirectory.open(Paths.get(queryDirectory));
 
-        new scoringResults(VSM, BM_25, index_directory, query_parser);
-        // Comment one while using another Score:-
-        scoringResults.scoringDocs(BM_25, querystrings);
-        // scoringResults.scoringDocs(VSM, querystrings);
+            // create index for Cranfield corpus
+            ProcessFile parse_doc = new ProcessFile(indexDirectory, textAnalyzer);
+            parse_doc.processFile(cranDirectory + "/cran.all.1400", indexDirectory, index_directory);
+
+            // create index for the Cranfield Queries
+            query_parser = new QueryParser(textAnalyzer);
+            querystrings = query_parser.readFile(cranDirectory + "/cran.qry");
+
+            new scoringResults(VSM, BM_25, index_directory, query_parser,x);
+            // Comment one while using another Score:-
+            scoringResults.scoringDocs(BM_25, querystrings);
+            scoringResults.scoringDocs(VSM, querystrings);
+
+        }
 
         shutdown();
     }

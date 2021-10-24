@@ -4,8 +4,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -18,9 +16,9 @@ import org.apache.lucene.document.FieldType;
 public class ProcessFile {
     private Analyzer analyzer;
 
-    public ProcessFile(String index_dir) throws IOException {
+    public ProcessFile(String index_dir, Analyzer textAnalyzer) throws IOException {
 
-        this.analyzer = new StandardAnalyzer(EnglishAnalyzer.getDefaultStopSet());
+        this.analyzer = textAnalyzer;
     }
 
     // parse cran.all.1400
@@ -42,10 +40,12 @@ public class ProcessFile {
             while ((line = bufferedReader.readLine()) != null) {
 
                 if (line.startsWith(".I")) {
+
                     if (!firstDoc) {
                         doc.add(new Field("contents", addData, field_type));
                         iwriter.addDocument(doc);
                     }
+
                     firstDoc = false;
                     doc = new Document();
                     doc.add(new StringField("file_number", line.substring(3), Field.Store.YES));
@@ -55,14 +55,17 @@ public class ProcessFile {
 
                     addData = "";
                 } else if (line.startsWith(".A")) {
+
                     doc.add(new Field("title", addData, field_type));
 
                     addData = "";
                 } else if (line.startsWith(".B")) {
+
                     doc.add(new Field("author", addData, field_type));
 
                     addData = "";
                 } else if (line.startsWith(".W")) {
+
                     doc.add(new Field("bibliography", addData, field_type));
 
                     addData = "";
