@@ -47,9 +47,6 @@ public class scoringResults {
             if (x == 2) {
                 resultsDir = new File("VSM_results_Simple.txt");
             }
-            // if (x == 3) {
-            //     resultsDir = new File("VSM_results_Stop.txt");
-            // }
             if (x == 3) {
                 resultsDir = new File("VSM_results_Classic.txt");
             }
@@ -65,9 +62,6 @@ public class scoringResults {
             if (x == 2) {
                 resultsDir = new File("BM25_results_Simple.txt");
             }
-            // if (x == 3) {
-            //     resultsDir = new File("BM25_results_Stop.txt");
-            // }
             if (x == 3) {
                 resultsDir = new File("BM25_results_Classic.txt");
             }

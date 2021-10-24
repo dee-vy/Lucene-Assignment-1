@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
-import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.ClassicAnalyzer;
@@ -66,7 +65,7 @@ public class IndexFile {
             querystrings = query_parser.readFile(cranDirectory + "/cran.qry");
 
             new scoringResults(VSM, BM_25, index_directory, query_parser,x);
-            // Comment one while using another Score:-
+            
             scoringResults.scoringDocs(BM_25, querystrings);
             scoringResults.scoringDocs(VSM, querystrings);
 
