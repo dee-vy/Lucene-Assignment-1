@@ -1,7 +1,4 @@
 import java.io.IOException;
-// import java.nio.charset.Charset;
-// import java.nio.file.Files;
-// import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,7 +28,6 @@ public class scoringResults {
     }
 
     public static void scoringDocs(int type, ArrayList<String> querystrings) throws IOException, ParseException {
-        int maxResults = 20;
         DirectoryReader ireader = DirectoryReader.open(indexDirectory);
         IndexSearcher indexSearch = new IndexSearcher(ireader);
         Query query;
@@ -39,16 +35,11 @@ public class scoringResults {
         File resultsDir = null;
         if (type == VSM) {
             indexSearch.setSimilarity(new ClassicSimilarity());
-            resultsDir = new File("VSM_results.txt"); // Results/VSM/
-            // if (!resultsDir.exists())
-            //     resultsDir.mkdirs();
-            // Files.write(Paths.get("Results/vsm_output.txt"), Charset.forName("UTF-8"));
+            resultsDir = new File("VSM_results.txt"); 
 
         } else if (type == BM_25) {
             indexSearch.setSimilarity(new BM25Similarity());
-            resultsDir = new File("BM25_results.txt"); // Results/BM25/
-            // if (!resultsDir.exists())
-            //     resultsDir.mkdirs();
+            resultsDir = new File("BM25_results.txt");
         } else {
             System.out.println("Invalid scoring entry");
         }
@@ -57,7 +48,7 @@ public class scoringResults {
             for (String querystring : querystrings) {
                 query = query_parser.parseQuery(querystring);
 
-                ScoreDoc[] hits = indexSearch.search(query, maxResults).scoreDocs;
+                ScoreDoc[] hits = indexSearch.search(query, 1400).scoreDocs;
 
                 // write results to file for eval
                 writeResultsFile(hits, indexSearch, queryIndex, type, bw);
@@ -81,7 +72,7 @@ public class scoringResults {
 
         for (int i = 0; i < hits.length; i++) {
             Document hitDoc = indexSearch.doc(hits[i].doc);
-            String line = (queryIndex) + " Q0 " + hitDoc.get("file_number") + " " + (i + 1) + " " + hits[i].score
+            String line = (queryIndex) + " 0 " + hitDoc.get("file_number") + " " + (i + 1) + " " + hits[i].score
                     + " STANDARD" + " \n";
             bw.write(line);
             // System.out.println(line);

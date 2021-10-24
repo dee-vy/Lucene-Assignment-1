@@ -18,7 +18,7 @@ public class QueryParser {
 
     public QueryParser(Analyzer queryAnalyzer) {
         parser = new MultiFieldQueryParser(new String[] { "title", "author", "bibliography", "contents" },
-                queryAnalyzer, boost());
+                queryAnalyzer);
     }
 
     public Query parseQuery(String queryLine) throws ParseException {
@@ -72,12 +72,12 @@ public class QueryParser {
         return strings;
     }
 
-    public static Map<String, Float> boost() {
-        Map<String, Float> boostMap = new HashMap();
-        boostMap.put("title", (float) 0.48);
-        boostMap.put("author", (float) 0.1);
-        boostMap.put("bibliography", (float) 0.01);
-        boostMap.put("contents", (float) 0.41);
-        return boostMap;
-    }
+    // public static Map<String, Float> boost() {
+    //     Map<String, Float> boostMap = new HashMap();
+    //     boostMap.put("title", (float) 0.48);
+    //     boostMap.put("author", (float) 0.1);
+    //     boostMap.put("bibliography", (float) 0.01);
+    //     boostMap.put("contents", (float) 0.41);
+    //     return boostMap;
+    // }
 }
