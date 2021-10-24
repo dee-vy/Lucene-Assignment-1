@@ -28,7 +28,7 @@ public class QueryParser {
         BufferedReader br = null;
         String line;
         String queryLine = "";
-        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<String> strings = new ArrayList();
         int count = 1;
 
         try {
