@@ -11,8 +11,8 @@ cd assignment1/
 
 
 To run shell script:
-<To make file executable> : chmod 755 run.sh
-<To run the script> :  sh run.sh or ./run.sh 
+To make file executable - chmod 755 run.sh
+To run the script -  sh run.sh or ./run.sh 
 
 
   
